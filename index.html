@@ -119,8 +119,7 @@
 <body>
 
 <h1>51 pontos visszaesési jel</h1>
-
-  <p style="text-align: center; font-size: 14px; font-style: italic; color: #555; margin-top: -10px; margin-bottom: 30px;">
+<p style="text-align: center; font-size: 14px; font-style: italic; color: #555; margin-top: -10px; margin-bottom: 30px;">
   „A visszaesés sohasem a pillanat hevében történik. Az egy út, amíg az irracionális gondolkodás eléri végső esztelenségét.”
 </p>
 
@@ -141,10 +140,17 @@
 
 <input type="file" id="fajlbetolto" accept=".json" style="display:none" onchange="betoltesFajlbol(event)">
 
-<script>
-// --- A teljes JavaScript kódot ide illesztheted be, benne a kerdesek tombbel ---
+<div style="text-align: center; margin-top: 40px;">
+  <button onclick="window.open('https://github.com/vavisionco/visszaesesi_jelek/blob/main/README.md', '_blank')"
+          style="background-color: #6c757d; color: white; font-size: 14px; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
+    Részletes útmutató (README)
+  </button>
+</div>
 
-  const fullText = `Kezdek kételkedni abban, hogy tiszta tudok maradni.
+<script>
+let chart;
+
+const kerdesek = `Kezdek kételkedni abban, hogy tiszta tudok maradni.
 Tagadom a félelmeimet.
 Győzködöm magam, hogy soha többé nem fogok használni.
 Úgy döntök, csak absztinenciára van szükségem, másra nem.
@@ -195,15 +201,115 @@ Jelentős változást tapasztalok, vagy viszek végbe az életembe.
 Olyan szert kezdek használni, amivel korábban nem volt problémám.
 Kontrollált használatot gyakorolok.
 Teljesen elveszítem a kontrollt. Mániákusan viselkedem.`.split('\n');
-  
+
+function betoltKerdesek() {
+  const container = document.getElementById("kerdesek");
+  container.innerHTML = "";
+  kerdesek.forEach((szoveg, index) => {
+    const sorszam = index + 1;
+    const div = document.createElement("div");
+    div.className = "kerdes";
+    div.innerHTML = `
+      <p>${sorszam}. ${szoveg}</p>
+      <div class="valaszok">
+        <input type="radio" id="igen_${sorszam}" name="kerdes_${sorszam}" value="igen">
+        <label for="igen_${sorszam}">Igen</label>
+        <input type="radio" id="nem_${sorszam}" name="kerdes_${sorszam}" value="nem">
+        <label for="nem_${sorszam}">Nem</label>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function szamol() {
+  const datum = document.getElementById("datum").value;
+  if (!datum) {
+    alert("Kérlek, add meg a dátumot!");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  let osszpont = 0;
+  kerdesek.forEach((_, index) => {
+    const sorszam = index + 1;
+    const valasz = document.querySelector(`input[name='kerdes_${sorszam}']:checked`);
+    if (valasz && valasz.value === "igen") {
+      osszpont += sorszam;
+    }
+  });
+  document.getElementById("eredmeny").textContent = `Összpontszám: ${osszpont} / 1356`;
+
+  const eddigiek = JSON.parse(localStorage.getItem("kitoltesek") || "[]");
+  eddigiek.push({ datum, pontok: osszpont });
+  localStorage.setItem("kitoltesek", JSON.stringify(eddigiek));
+  mentesJSON(eddigiek);
+  rajzolDiagram(eddigiek);
+}
+
+function rajzolDiagram(adatok) {
+  const rendezett = adatok.sort((a, b) => a.datum.localeCompare(b.datum));
+  const labels = rendezett.map(e => e.datum);
+  const values = rendezett.map(e => e.pontok);
+  const szinek = values.map(pont => pont <= 200 ? 'green' : pont <= 500 ? 'blue' : pont <= 800 ? 'gold' : pont <= 1100 ? 'orange' : 'red');
+  const ctx = document.getElementById('diagram').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Pontszám alakulása',
+        data: values,
+        borderColor: 'gray',
+        borderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: szinek,
+        pointBorderColor: szinek
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          min: 0,
+          max: 1356
+        }
+      }
+    }
+  });
+}
+
+function resetAdatok() {
+  localStorage.removeItem("kitoltesek");
+  document.getElementById("eredmeny").textContent = "";
+  if (chart) chart.destroy();
+}
+
+function betoltesFajlbol(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const tartalom = JSON.parse(e.target.result);
+    localStorage.setItem("kitoltesek", JSON.stringify(tartalom));
+    rajzolDiagram(tartalom);
+  };
+  reader.readAsText(file);
+}
+
+function mentesJSON(adatok) {
+  const blob = new Blob([JSON.stringify(adatok)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "kitoltesek.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+window.onload = betoltKerdesek;
 </script>
 
-<div style="text-align: center; margin-top: 40px;">
-  <button onclick="window.open('https://github.com/vavisionco/visszaesesi_jelek/blob/main/README.md', '_blank')"
-          style="background-color: #6c757d; color: white; font-size: 14px; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer;">
-    Részletes útmutató (README)
-  </button>
-</div>
-  
 </body>
 </html>
