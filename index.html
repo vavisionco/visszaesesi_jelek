@@ -217,10 +217,11 @@ Teljesen elveszítem a kontrollt. Mániákusan viselkedem.`.split('\n');
   let chart;
 
   function szamol() {
-    const datum = document.getElementById("datum").value;
+    const  = document.getElementById("").value;
     if (!datum) {
-      alert("Kérlek, add meg a dátumot!");
-      return;
+  alert("Kérlek, add meg a dátumot!");
+  window.scrollTo({ top: 0, behavior: 'smooth' }); // gördülés a tetejére
+  return;
     }
 
     let pontok = 0;
