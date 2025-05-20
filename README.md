@@ -51,6 +51,11 @@ Ez az oldal egy 51 kérdésből álló, IGEN/NEM alapú visszaesési kockázatot
 
 ---
 
+## Biztonság
+- A rendszer a kitöltés eredményeit a futtatott eszközön tárolja
+
+---
+
 ## Mobilhasználat
 - A HTML-fájl működik mobilon is, ha **helyileg megnyitod a böngészőben**
 - **Google Drive-ból közvetlenül megnyitva nem fut le a kód**
