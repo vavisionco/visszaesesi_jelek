@@ -122,13 +122,13 @@
 <body>
 
 <h1>51 pontos visszaesési jel</h1>
-  
+
 <p style="text-align: center; font-size: 14px; font-style: italic; color: #555; margin-top: -10px; margin-bottom: 30px;">
-  „A visszaesés sohasem a pillanat hevében történik. Azt megelőzi egy időszak, amíg az irracionális gondolkodás eléri végső esztelenségét.”
+  „A visszaesés sohasem a pillanat hevében történik. Az egy út, amíg az irracionális gondolkodás eléri végső esztelenségét.”
 </p>
-  
+
 <form id="kerdoiv">
-  <label for="datum"><strong>Kitöltés dátuma:</strong></label><br>
+  <label for="datum"><strong>Dátum:</strong></label><br>
   <input type="date" id="datum" required><br>
   <div id="kerdesek"></div>
   <button type="button" onclick="szamol()">Eredmény megjelenítése</button>
@@ -217,11 +217,10 @@ Teljesen elveszítem a kontrollt. Mániákusan viselkedem.`.split('\n');
   let chart;
 
   function szamol() {
-    const  = document.getElementById("").value;
+    const datum = document.getElementById("datum").value;
     if (!datum) {
-  alert("Kérlek, add meg a dátumot!");
-  window.scrollTo({ top: 0, behavior: 'smooth' }); // gördülés a tetejére
-  return;
+      alert("Kérlek, add meg a dátumot!");
+      return;
     }
 
     let pontok = 0;
