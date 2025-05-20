@@ -46,7 +46,7 @@ Ez az oldal egy 51 kérdésből álló, IGEN/NEM alapú visszaesési kockázatot
 ---
 
 ## Mentés
-- A rendszer minden kitöltés után automatikusan menti az adatokat a letötések mappába `kitoltesek.json` néven
+- A rendszer minden kitöltés után automatikusan menti az adatokat a böngésző alapértelmezett letöltések mappába `kitoltesek.json` néven
 - A fájl kézzel átnevezhető vagy archiválható
 
 ---
