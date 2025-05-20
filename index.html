@@ -251,7 +251,7 @@ function rajzolDiagram(adatok) {
   const labels = rendezett.map(e => e.datum);
   const values = rendezett.map(e => e.pontok);
   const szinek = values.map(pont => {
-  if (pont <= 200) return 'green';
+  if (pont <= 250) return 'green';
   if (pont <= 400) return 'yellow';
   if (pont <= 600) return 'orange';
   if (pont <= 800) return 'red';
