@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>51 pontos visszaesési jel</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 40px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #f9f9f9;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    form {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    .kerdes {
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .valaszok {
+      margin-top: 8px;
+    }
+
+    .valaszok label {
+      display: inline-block;
+      background-color: #e0e0e0;
+      border-radius: 20px;
+      padding: 8px 16px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    .valaszok input[type="radio"] {
+      display: none;
+    }
+
+    .valaszok input[type="radio"]:checked + label {
+      background-color: #007BFF;
+      color: white;
+    }
+
+    button {
+      display: block;
+      margin: 30px auto 10px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    canvas {
+      margin-top: 50px;
+      width: 100% !important;
+      height: 400px !important;
+    }
+
+    input[type="date"] {
+      padding: 6px 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+      margin-bottom: 20px;
+    }
+
+    #eredmeny {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 20px;
+    }
+
+    #eredmeny-gombok {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    #eredmeny-gombok button {
+      background-color: #6c757d;
+      color: white;
+      font-size: 14px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: opacity 0.2s ease;
+    }
+
+    #eredmeny-gombok button:hover {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+<h1>51 pontos visszaesési jel</h1>
+
+<form id="kerdoiv">
+  <label for="datum"><strong>Dátum:</strong></label><br>
+  <input type="date" id="datum" required><br>
+  <div id="kerdesek"></div>
+  <button type="button" onclick="szamol()">Eredmény megjelenítése</button>
+</form>
+
+<h2 id="eredmeny"></h2>
+<canvas id="diagram"></canvas>
+
+<div id="eredmeny-gombok">
+  <button onclick="document.getElementById('fajlbetolto').click()">Korábbi eredmények betöltése</button>
+  <button onclick="resetAdatok()">Összes eredmény törlése</button>
+</div>
+
+<input type="file" id="fajlbetolto" accept=".json" style="display:none" onchange="betoltesFajlbol(event)">
+
+<script>
+ const fullText = `Kezdek kételkedni abban, hogy tiszta tudok maradni.
+Tagadom a félelmeimet.
+Győzködöm magam, hogy soha többé nem fogok használni.
+Úgy döntök, csak absztinenciára van szükségem, másra nem.
+Próbálom másokra erőltetni a józanságot.
+Elbízom magam a felépülésemmel kapcsolatban.
+Kerülöm, hogy a problémáimról vagy a felépülésemről beszéljek.
+Kerülöm a szponzorom / mentorom / segítőm. Minden kérdésre úgy válaszolok, hogy "Értem, de..."
+Kényszeresen viselkedek / túlzásokba esem. (Munka, beszéd, magány) túl sok vagy túl kevés.
+Túlreagálom a stresszhelyzeteket
+Kezdek elszigetelődni.
+Az életem egy bizonyos részével vagyok csak elfoglalva.
+Kezdek kisebb depressziót tapasztalni.
+Irreális / véletlenszerű tervezgetésbe kezdek.
+Az "itt és most" helyett, az "akkor és ott"-ban élek.
+Azt veszem észre, hogy a terveim kezdenek sorban kudarcba fulladni.
+Idealisztikusan álmodozom / ábrándozom.
+Megoldhatatlannak látom a problémáimat.
+Boldogságra vágyom, de nem tudom, mi az.
+Kerülöm a szórakozást.
+Túlanalizálom magam.
+Irritálnak a barátaim és a családom.
+Zavarral teli időszakot tapasztalok.
+Könnyen dühbe gurulok.
+Hibáztatom az embereket, dolgokat, állapotokat a problémáimért.
+Kezdek kételkedni a betegségemben.
+Rendszertelenül étkezem (túl sok / túl kevés / nassolgatások).
+Fásult időszakaim vannak.
+Rendszertelenül alszom (túl sokat / túl keveset).
+Folyamatosan veszítem el a napi rendszerességet.
+Időnként mély depresszióban szenvedek.
+Hanyagolom a gyűléseket. Megváltozik a hozzáállásom.
+Hajszolom a pénzt, a szexet, a hatalmat.
+Nyíltan elutasítom a segítséget.
+Fájdalmaim alakulnak ki.
+Megmagyarázom, hogy a használattól nem lesz sokkal rosszabb.
+Tehetetlennek és elhanyagoltnak érzem magam.
+Sajnálom magam.
+Szociális használatról fantáziálok.
+Kezdek tudatosan hazudni.
+Vény nélküli gyógyszeradagolást növelem.
+Teljesen elveszítem az önbizalmam.
+Túlzott nehezteléseket alakítok ki.
+Nem látogatom a gyűléseket.
+Lever a magány, a düh és a feszültség.
+Keresem a használó barátokat és helyzeteket.
+Győzködöm magam, hogy meggyógyultam.
+Jelentős változást tapasztalok, vagy viszek végbe az életembe.
+Olyan szert kezdek használni, amivel korábban nem volt problémám.
+Kontrollált használatot gyakorolok.
+Teljesen elveszítem a kontrollt. Mániákusan viselkedem.`.split('\n');
+
+  const kerdesek = fullText;
+  const kontener = document.getElementById("kerdesek");
+
+  kerdesek.forEach((szoveg, index) => {
+    const szam = index + 1;
+    const div = document.createElement("div");
+    div.className = "kerdes";
+    div.innerHTML = `
+      <strong>${szam}.</strong> ${szoveg}
+      <div class="valaszok">
+        <input type="radio" id="q${szam}i" name="q${szam}" value="igen"><label for="q${szam}i">Igen</label>
+        <input type="radio" id="q${szam}n" name="q${szam}" value="nem"><label for="q${szam}n">Nem</label>
+      </div>
+    `;
+    kontener.appendChild(div);
+  });
+
+  let chart;
+
+  function szamol() {
+    const datum = document.getElementById("datum").value;
+    if (!datum) {
+      alert("Kérlek, add meg a dátumot!");
+      return;
+    }
+
+    let pontok = 0;
+    kerdesek.forEach((_, index) => {
+      const valasz = document.querySelector(`input[name="q${index + 1}"]:checked`);
+      if (valasz && valasz.value === "igen") pontok += index + 1;
+    });
+
+    document.getElementById("eredmeny").innerText = `Pontszámod: ${pontok} / 1356`;
+
+    let eredmenyek = JSON.parse(localStorage.getItem("kitoltesek") || "[]");
+    eredmenyek.push({ datum, pontok });
+    localStorage.setItem("kitoltesek", JSON.stringify(eredmenyek));
+
+    // Automatikus mentés fájlba
+    const blob = new Blob([JSON.stringify(eredmenyek)], { type: "application/json" });
+const url = URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = "kitoltesek.json"; // mindig ugyanaz a név
+a.click();
+URL.revokeObjectURL(url);
+
+    rajzolDiagram(eredmenyek);
+  }
+
+  function rajzolDiagram(adatok) {
+    const rendezett = adatok.sort((a, b) => a.datum.localeCompare(b.datum));
+    const labels = rendezett.map(e => e.datum);
+    const values = rendezett.map(e => e.pontok);
+
+    const ctx = document.getElementById('diagram').getContext('2d');
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Pontszám alakulása',
+          data: values,
+          borderColor: '#007BFF',
+          backgroundColor: 'rgba(0, 123, 255, 0.2)',
+          borderWidth: 2,
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            min: 0,
+            max: 1356
+          }
+        }
+      }
+    });
+  }
+
+  function resetAdatok() {
+    if (confirm("Biztosan törlöd az összes kitöltést?")) {
+      localStorage.removeItem("kitoltesek");
+      document.getElementById("eredmeny").innerText = "";
+      if (chart) chart.destroy();
+      alert("Az adatok törölve lettek.");
+    }
+  }
+
+  function betoltesFajlbol(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const adat = JSON.parse(e.target.result);
+        if (!Array.isArray(adat)) throw new Error("Nem megfelelő formátum.");
+        localStorage.setItem("kitoltesek", JSON.stringify(adat));
+        alert("Az adatok betöltve lettek.");
+        rajzolDiagram(adat);
+      } catch (err) {
+        alert("Hiba a betöltés során: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  window.onload = () => {
+    const adatok = JSON.parse(localStorage.getItem("kitoltesek") || "[]");
+    if (adatok.length > 0) rajzolDiagram(adatok);
+  };
+</script>
+
+</body>
+</html>
