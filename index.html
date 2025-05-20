@@ -250,7 +250,7 @@ function rajzolDiagram(adatok) {
   const rendezett = adatok.sort((a, b) => a.datum.localeCompare(b.datum));
   const labels = rendezett.map(e => e.datum);
   const values = rendezett.map(e => e.pontok);
-  const szinek = values.map(pont => pont <= 200 ? 'green' : pont <= 500 ? 'blue' : pont <= 800 ? 'gold' : pont <= 1100 ? 'orange' : 'red');
+  const szinek = values.map(pont => pont <= 200 ? 'green' : pont <= 400 ? 'blue' : pont <= 500 ? 'gold' : pont <= 700 ? 'orange' : pont <= 900 ? 'red');
   const ctx = document.getElementById('diagram').getContext('2d');
   if (chart) chart.destroy();
   chart = new Chart(ctx, {
